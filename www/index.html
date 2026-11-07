@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Кабинет мастера</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#faf5f7;--card:#fff;--ink:#2a1626;--mut:#7d6677;--line:#eadde4;--acc:#9b2d6f;--onacc:#fff;--ok:#1f7a5c;--bad:#b3362f;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a0f18;--card:#26172e;--ink:#f6eaf2;--mut:#b99fb0;--line:#3a2736;--acc:#e07bb8;--onacc:#2a0f20;--ok:#5fd0a5;--bad:#ff8a80}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Manrope,system-ui,sans-serif;max-width:560px;margin-inline:auto;padding:16px 16px 96px}
+h1{font-size:24px;font-weight:800;margin:4px 0 10px;letter-spacing:-.02em}
+input,select,textarea{width:100%;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px;font:15px Manrope,sans-serif}
+label{display:block;font-weight:600;margin:12px 0 5px;font-size:13px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.days{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px}
+.day{flex:none;width:52px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:8px 0;font:600 12px Manrope,sans-serif;text-align:center}
+.day b{display:block;font-size:17px}.day.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.day i{display:block;width:5px;height:5px;border-radius:50%;background:var(--acc);margin:3px auto 0}.day.on i{background:var(--onacc)}.day:not(.has) i{visibility:hidden}
+.sum{color:var(--mut);margin:0 0 10px}
+.ap{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:8px;width:100%;text-align:left;color:var(--ink);font:inherit}
+.ap .t{flex:none;width:54px;font-weight:800}.ap .t small{display:block;color:var(--mut);font-weight:400;font-size:12px}
+.ap.done{border-left:4px solid var(--ok)}.ap.cancel{opacity:.5;text-decoration:line-through}.ap.new{border-left:4px solid var(--acc)}
+.btn{border:0;background:var(--acc);color:var(--onacc);font:700 14px Manrope,sans-serif;padding:10px 16px;border-radius:12px}
+.btn.ghost{background:none;color:var(--ink);border:1px solid var(--line)}.btn.bad{background:none;color:var(--bad);border:1px solid var(--line)}
+.btn.big{width:100%;padding:14px;font-size:16px}
+.fab{position:fixed;right:16px;bottom:calc(76px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;font-size:28px;padding:0;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:3}
+.tabs{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:4px;background:var(--card);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));z-index:3}
+.tabs button{flex:1;max-width:140px;border:0;background:none;color:var(--mut);font:600 13px Manrope,sans-serif;padding:10px 4px;border-radius:12px}
+.tabs button.on{background:var(--acc);color:var(--onacc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:8px}
+.mut{color:var(--mut);font-size:13px}
+.sheet{position:fixed;inset:0;background:rgba(20,8,16,.55);display:flex;align-items:flex-end;justify-content:center;z-index:5}
+.sheet>div{background:var(--bg);width:100%;max-width:560px;max-height:92%;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px))}
+.sheet h2{margin:0 0 4px;font-size:20px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}.stat b{display:block;font-size:22px}
+.bars{display:flex;align-items:flex-end;gap:6px;height:90px;margin:10px 0 4px}
+.bars div{flex:1;background:var(--acc);border-radius:6px 6px 0 0;min-height:3px}
+.bl{display:flex;gap:6px}.bl span{flex:1;text-align:center;font-size:11px;color:var(--mut)}
+.bar2{height:8px;background:var(--acc);border-radius:4px;margin-top:4px}
+.empty{color:var(--mut);text-align:center;padding:26px 10px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:12px;font-weight:600;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+.toast.show{opacity:1}
+</style></head>
+<body>
+<h1 id="h"></h1>
+<main id="app"></main>
+<button class="btn fab" id="fab" data-add="1" aria-label="Новая запись">+</button>
+<nav class="tabs"><button data-t="day">Записи</button><button data-t="cl">Клиенты</button><button data-t="sv">Услуги</button><button data-t="inc">Доход</button></nav>
+<div class="toast" id="toast"></div><div id="modal"></div>
+<script>
+function iso(d){return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
+function addD(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
+var TODAY=iso(new Date()),WD=["вс","пн","вт","ср","чт","пт","сб"],MON=["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"];
+var S={tab:"day",d:TODAY,sv:[],ap:[],q:""};
+try{var s=JSON.parse(localStorage.getItem("master")||"null");if(s){S.sv=s.sv;S.ap=s.ap}}catch(e){}
+if(!S.sv.length){
+ S.sv=[{id:1,n:"Маникюр с покрытием",p:2200,m:120},{id:2,n:"Маникюр классический",p:1400,m:60},{id:3,n:"Наращивание гелем",p:3200,m:150},{id:4,n:"Педикюр",p:2500,m:90}];
+ var demo=[["Анна К.","+79001112233",1,-2,"10:00"],["Мария С.","+79004445566",3,-1,"12:00"],["Ольга В.","+79007778899",2,0,"10:00"],["Ирина П.","+79001230000",1,0,"13:00"],["Анна К.","+79001112233",4,1,"11:00"],["Дарья Л.","+79005550011",1,2,"15:00"]];
+ demo.forEach(function(x,i){var sv=S.sv[x[2]-1];S.ap.push({id:i+1,c:x[0],ph:x[1],sid:x[2],d:iso(addD(new Date(),x[3])),t:x[4],p:sv.p,st:x[3]<0?"done":"new",note:""})});
+}
+function save(){try{localStorage.setItem("master",JSON.stringify({sv:S.sv,ap:S.ap}))}catch(e){}}
+function toast(t){var e=document.getElementById("toast");e.textContent=t;e.className="toast show";setTimeout(function(){e.className="toast"},1800)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function sv(id){return S.sv.filter(function(x){return x.id===id})[0]||{n:"Услуга удалена",m:60,p:0}}
+function mins(t){var a=t.split(":");return +a[0]*60+ +a[1]}
+function hm(m){return ("0"+Math.floor(m/60)).slice(-2)+":"+("0"+m%60).slice(-2)}
+function rub(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+$)/g," ")+" ₽"}
+function fmt(d){var x=new Date(d+"T00:00");return x.getDate()+" "+MON[x.getMonth()]+", "+WD[x.getDay()]}
+function render(){
+ document.querySelectorAll(".tabs button").forEach(function(b){b.className=b.dataset.t===S.tab?"on":""});
+ document.getElementById("fab").style.display=S.tab==="day"?"":"none";
+ var h="",H="Записи";
+ if(S.tab==="day"){
+  H=S.d===TODAY?"Сегодня":fmt(S.d);
+  h+='<div class="days">';
+  for(var k=-3;k<14;k++){var dt=addD(new Date(),k),id=iso(dt),has=S.ap.some(function(a){return a.d===id&&a.st!=="cancel"});
+   h+='<button class="day'+(id===S.d?' on':'')+(has?' has':'')+'" data-day="'+id+'">'+WD[dt.getDay()]+'<b>'+dt.getDate()+'</b><i></i></button>'}
+  h+='</div>';
+  var L=S.ap.filter(function(a){return a.d===S.d}).sort(function(a,b){return mins(a.t)-mins(b.t)});
+  var act=L.filter(function(a){return a.st!=="cancel"});
+  h+='<p class="sum">'+(act.length?act.length+' '+(act.length===1?'запись':'записей')+' · '+rub(act.reduce(function(s,a){return s+a.p},0)):'Свободный день')+'</p>';
+  if(!L.length)h+='<div class="empty">На этот день записей нет. Нажмите + чтобы добавить.</div>';
+  L.forEach(function(a){var s=sv(a.sid);
+   h+='<button class="ap '+a.st+'" data-open="'+a.id+'"><div class="t">'+a.t+'<small>до '+hm(mins(a.t)+s.m)+'</small></div><div style="flex:1"><b>'+esc(a.c)+'</b><div class="mut">'+esc(s.n)+(a.st==="done"?' · оплачено':'')+'</div></div><b>'+rub(a.p)+'</b></button>'});
+ }else if(S.tab==="cl"){
+  H="Клиенты";
+  h+='<input id="q" placeholder="Поиск по имени или телефону" value="'+esc(S.q)+'" style="margin-bottom:10px">';
+  var C={};S.ap.forEach(function(a){var c=C[a.ph||a.c]||(C[a.ph||a.c]={n:a.c,ph:a.ph,v:0,sum:0,last:""});if(a.st==="done"){c.v++;c.sum+=a.p}if(a.st!=="cancel"&&a.d>c.last)c.last=a.d});
+  var q=S.q.toLowerCase(),arr=Object.keys(C).map(function(k){return C[k]}).filter(function(c){return !q||(c.n+c.ph).toLowerCase().indexOf(q)>-1}).sort(function(a,b){return b.sum-a.sum});
+  if(!arr.length)h+='<div class="empty">Клиентов пока нет. Они появятся из записей.</div>';
+  arr.forEach(function(c){h+='<div class="card"><div class="row"><b>'+esc(c.n)+'</b><span>'+rub(c.sum)+'</span></div><div class="mut">'+esc(c.ph||"без телефона")+' · визитов: '+c.v+(c.last?' · последняя запись '+fmt(c.last):'')+'</div></div>'});
+ }else if(S.tab==="sv"){
+  H="Услуги";
+  S.sv.forEach(function(x){h+='<div class="card"><div class="row"><b>'+esc(x.n)+'</b><button class="btn ghost" data-delsv="'+x.id+'">Удалить</button></div><div class="mut">'+rub(x.p)+' · '+x.m+' мин</div></div>'});
+  h+='<div class="card"><b>Новая услуга</b><label>Название</label><input id="sn"><div class="g2"><div><label>Цена, ₽</label><input id="sp" type="number" inputmode="numeric"></div><div><label>Длительность, мин</label><input id="sm" type="number" inputmode="numeric" value="60"></div></div><div style="height:12px"></div><button class="btn big" id="addsv">Добавить услугу</button></div>';
+ }else{
+  H="Доход";
+  var ym=TODAY.slice(0,7),dn=S.ap.filter(function(a){return a.st==="done"&&a.d.slice(0,7)===ym}),tot=dn.reduce(function(s,a){return s+a.p},0);
+  var fut=S.ap.filter(function(a){return a.st==="new"&&a.d>=TODAY}).reduce(function(s,a){return s+a.p},0);
+  h+='<div class="g2"><div class="stat"><span class="mut">За месяц</span><b>'+rub(tot)+'</b></div><div class="stat"><span class="mut">Средний чек</span><b>'+(dn.length?rub(tot/dn.length):"—")+'</b></div><div class="stat"><span class="mut">Визитов</span><b>'+dn.length+'</b></div><div class="stat"><span class="mut">Ожидается</span><b>'+rub(fut)+'</b></div></div>';
+  var w=[];for(var k=6;k>=0;k--){var id=iso(addD(new Date(),-k));w.push([WD[new Date(id+"T00:00").getDay()],S.ap.filter(function(a){return a.d===id&&a.st==="done"}).reduce(function(s,a){return s+a.p},0)])}
+  var mx=Math.max.apply(null,w.map(function(x){return x[1]}).concat([1]));
+  h+='<p class="sum" style="margin-top:16px">Последние 7 дней</p><div class="bars">'+w.map(function(x){return '<div style="height:'+(x[1]/mx*100)+'%"></div>'}).join("")+'</div><div class="bl">'+w.map(function(x){return '<span>'+x[0]+'</span>'}).join("")+'</div>';
+  h+='<p class="sum" style="margin-top:16px">По услугам за месяц</p>';
+  S.sv.forEach(function(x){var s=dn.filter(function(a){return a.sid===x.id}).reduce(function(t,a){return t+a.p},0);if(s)h+='<div class="card"><div class="row"><span>'+esc(x.n)+'</span><b>'+rub(s)+'</b></div><div class="bar2" style="width:'+(s/tot*100)+'%"></div></div>'});
+  if(!tot)h+='<div class="empty">Доход появится, когда вы отметите визиты как выполненные.</div>';
+ }
+ document.getElementById("h").textContent=H;document.getElementById("app").innerHTML=h;
+ var qi=document.getElementById("q");
+ if(qi)qi.oninput=function(){S.q=qi.value;var p=qi.selectionStart;render();var n=document.getElementById("q");n.focus();n.setSelectionRange(p,p)};
+}
+function close(){document.getElementById("modal").innerHTML=""}
+function addSheet(){
+ var h='<div class="sheet" data-close="1"><div><h2>Новая запись</h2><label>Клиент</label><input id="cn" placeholder="Имя"><label>Телефон</label><input id="cp" type="tel" inputmode="tel" placeholder="+7 900 000-00-00">'+
+ '<label>Услуга</label><select id="cs">'+S.sv.map(function(x){return '<option value="'+x.id+'">'+esc(x.n)+' — '+rub(x.p)+'</option>'}).join("")+'</select>'+
+ '<div class="g2"><div><label>Дата</label><input id="cd" type="date" value="'+S.d+'"></div><div><label>Время</label><input id="ct" type="time" value="12:00" step="900"></div></div>'+
+ '<label>Заметка</label><input id="cm" placeholder="Например: снять старое покрытие"><div style="height:16px"></div><button class="btn big" id="saveap">Сохранить запись</button></div></div>';
+ document.getElementById("modal").innerHTML=h;
+}
+function openSheet(id){
+ var a=S.ap.filter(function(x){return x.id===id})[0],s=sv(a.sid);
+ var h='<div class="sheet" data-close="1"><div><h2>'+esc(a.c)+'</h2><p class="mut">'+esc(a.ph||"без телефона")+'<br>'+fmt(a.d)+', '+a.t+'–'+hm(mins(a.t)+s.m)+' · '+esc(s.n)+' · '+rub(a.p)+(a.note?'<br>'+esc(a.note):'')+'</p>'+
+ (a.st==="new"?'<button class="btn big" data-done="'+id+'">Клиент пришёл — оплачено</button><div style="height:8px"></div>':'')+
+ '<button class="btn ghost big" data-rem="'+id+'">Скопировать напоминание клиенту</button><div style="height:8px"></div>'+
+ (a.st==="new"?'<button class="btn bad big" data-cx="'+id+'">Отменить запись</button><div style="height:8px"></div>':'')+
+ '<button class="btn bad big" data-del="'+id+'">Удалить</button></div></div>';
+ document.getElementById("modal").innerHTML=h;
+}
+function copy(t){try{navigator.clipboard.writeText(t).then(function(){toast("Скопировано")},function(){prompt("Скопируйте текст",t)})}catch(e){prompt("Скопируйте текст",t)}}
+document.addEventListener("click",function(e){
+ var t=e.target.closest("button,.sheet"),d=t?t.dataset:{};if(!t)return;
+ if(d.t){S.tab=d.t;render()}
+ else if(d.day){S.d=d.day;render()}
+ else if(d.add){addSheet()}
+ else if(d.open){openSheet(+d.open)}
+ else if(d.done){S.ap.forEach(function(a){if(a.id===+d.done)a.st="done"});save();close();render();toast("Визит записан в доход")}
+ else if(d.cx){S.ap.forEach(function(a){if(a.id===+d.cx)a.st="cancel"});save();close();render();toast("Запись отменена")}
+ else if(d.del){S.ap=S.ap.filter(function(a){return a.id!==+d.del});save();close();render()}
+ else if(d.rem){var a=S.ap.filter(function(x){return x.id===+d.rem})[0];copy("Здравствуйте, "+a.c+"! Напоминаю о записи: "+fmt(a.d)+" в "+a.t+" ("+sv(a.sid).n+"). Если планы изменятся, напишите заранее.")}
+ else if(d.delsv){S.sv=S.sv.filter(function(x){return x.id!==+d.delsv});save();render()}
+ else if(t.id==="addsv"){var n=document.getElementById("sn").value.trim(),p=+document.getElementById("sp").value,m=+document.getElementById("sm").value;
+  if(!n||!p||!m){toast("Заполните название, цену и время");return}
+  S.sv.push({id:Date.now(),n:n,p:p,m:m});save();render();toast("Услуга добавлена")}
+ else if(t.id==="saveap"){
+  var c=document.getElementById("cn").value.trim(),sid=+document.getElementById("cs").value,dd=document.getElementById("cd").value,tt=document.getElementById("ct").value;
+  if(!c||!dd||!tt){toast("Укажите клиента, дату и время");return}
+  var x=sv(sid),st=mins(tt),en=st+x.m;
+  var clash=S.ap.filter(function(a){return a.d===dd&&a.st!=="cancel"&&mins(a.t)<en&&mins(a.t)+sv(a.sid).m>st})[0];
+  if(clash&&!confirm("Время пересекается с записью "+clash.c+" в "+clash.t+". Всё равно сохранить?"))return;
+  S.ap.push({id:Date.now(),c:c,ph:document.getElementById("cp").value.trim(),sid:sid,d:dd,t:tt,p:x.p,st:"new",note:document.getElementById("cm").value.trim()});
+  save();S.d=dd;S.tab="day";close();render();toast("Запись добавлена")}
+ else if(d.close&&e.target===t){close()}
+});
+render();
+</script></body></html>
