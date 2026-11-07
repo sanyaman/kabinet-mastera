@@ -19,8 +19,8 @@ label{display:block;font-weight:600;margin:12px 0 5px;font-size:13px}
 .day i{display:block;width:5px;height:5px;border-radius:50%;background:var(--acc);margin:3px auto 0}.day.on i{background:var(--onacc)}.day:not(.has) i{visibility:hidden}
 .vt{display:flex;border:1px solid var(--acc);border-radius:12px;overflow:hidden;margin-bottom:10px}.vt button{flex:1;border:0;background:none;color:var(--acc);font:700 12px Manrope,sans-serif;padding:10px 2px}.vt button.on{background:var(--acc);color:var(--onacc)}
 .gh{display:flex;padding-left:34px;gap:1px}.gd{flex:1;border:0;background:none;color:var(--mut);font:600 12px Manrope,sans-serif;padding:4px 0;text-align:center}.gd b{display:block;font-size:14px;color:var(--ink)}.gd.td b{color:var(--acc)}
-.gb{display:flex;position:relative;border-top:1px solid var(--line)}.gt{width:34px;flex:none;position:relative}.gt span{position:absolute;right:4px;font-size:11px;color:var(--mut);transform:translateY(-50%)}
-.gc{flex:1;position:relative;border-left:1px solid var(--line);background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 56px;min-width:0}
+.gt span.h{color:var(--ink);font-weight:700;font-size:12px}.gb{margin-top:8px;display:flex;position:relative;border-top:1px solid var(--line)}.gt{width:34px;flex:none;position:relative}.gt span{position:absolute;right:4px;font-size:11px;color:var(--mut);transform:translateY(-50%)}
+.gc{flex:1;position:relative;border-left:1px solid var(--line);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(rgba(128,128,128,.16) 1px,transparent 1px);background-size:100% 72px,100% 72px;background-position:0 0,0 36px;min-width:0}
 .gk{position:absolute;left:1px;right:1px;border:0;border-radius:6px;padding:3px;overflow:hidden;text-align:left;font:inherit;color:#1c1030;background:#cdb8ff;line-height:1.15}.gk b{display:block;font-size:11px;overflow:hidden;text-overflow:ellipsis}.gk small{display:block;font-size:9px;opacity:.7;word-break:break-word}
 .gk.done{background:#6fdca8}.gk.br{background:#4a7fb5;color:#fff}.dayh{font-weight:800;margin:14px 0 6px}
 .card.cb{display:block;width:100%;text-align:left;color:var(--ink);font:inherit}.ap.cancel .mut{text-decoration:none}
@@ -99,7 +99,7 @@ function navHTML(){
  if(S.v==="week"){var f=addD(sd,-((sd.getDay()+6)%7)),l=addD(f,6);t=f.getDate()+" "+MON[f.getMonth()]+" – "+l.getDate()+" "+MON[l.getMonth()]}else t=fmt(S.d);
  return '<div class="calh"><button class="btn ghost" data-mv="-1">‹</button><b>'+t+'</b><div><button class="btn ghost" data-today="1" style="font-size:13px">Сегодня</button> <button class="btn ghost" data-mv="1">›</button></div></div>';
 }
-var PH=56;
+var PH=72;
 function gridHTML(){
  var wk=S.v==="week",sd=new Date(S.d+"T00:00"),first=wk?addD(sd,-((sd.getDay()+6)%7)):sd,days=[];
  for(var i=0;i<(wk?7:1);i++)days.push(iso(addD(first,i)));
@@ -108,7 +108,7 @@ function gridHTML(){
  var h='<div class="gh">';
  days.forEach(function(id){var dt=new Date(id+"T00:00");h+='<button class="gd'+(id===TODAY?' td':'')+'" data-dh="'+id+'">'+WD[dt.getDay()]+'<b>'+dt.getDate()+'</b></button>'});
  h+='</div><div class="gb" style="height:'+(hi-lo)/60*PH+'px"><div class="gt">';
- for(var m=lo;m<hi;m+=60)h+='<span style="top:'+(m-lo)/60*PH+'px">'+m/60+'</span>';
+ for(var m=lo;m<hi;m+=30)h+='<span class="'+(m%60?'':'h')+'" style="top:'+(m-lo)/60*PH+'px">'+(m%60?':30':m/60)+'</span>';
  h+='</div>';
  days.forEach(function(id){
   h+='<div class="gc" data-col="'+id+'" data-lo="'+lo+'">';
@@ -197,6 +197,7 @@ function openSheet(id){
 }
 function copy(t){try{navigator.clipboard.writeText(t).then(function(){toast("Скопировано")},function(){prompt("Скопируйте текст",t)})}catch(e){prompt("Скопируйте текст",t)}}
 document.addEventListener("click",function(e){
+
  var gc=e.target.closest&&e.target.closest(".gc");
  if(gc&&!e.target.closest("button")){var y=e.clientY-gc.getBoundingClientRect().top;addSheet(gc.dataset.col,hm(Math.min(+gc.dataset.lo+Math.floor(y/(PH/2))*30,1410)));return}
  var t=e.target.closest("button,.sheet"),d=t?t.dataset:{};if(!t)return;
