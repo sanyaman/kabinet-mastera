@@ -226,9 +226,15 @@ document.addEventListener("click",function(e){
   var x=sv(sid),st=mins(tt),en=br?mins(ee):st+x.m;
   var clash=S.ap.filter(function(a){return a.d===dd&&a.st!=="cancel"&&mins(a.t)<en&&mins(a.t)+dur(a)>st})[0];
   if(clash&&!confirm("Время пересекается: "+clash.c+" в "+clash.t+". Всё равно сохранить?"))return;
-  S.ap.push(br?{id:Date.now(),c:"Перерыв",ph:"",sid:0,d:dd,t:tt,e:ee,p:0,st:"new",br:1,note:nt}:{id:Date.now(),c:c,ph:document.getElementById("cp").value.trim(),sid:sid,d:dd,t:tt,p:x.p,st:"new",note:nt});
+  S.ap.push(br?{id:Date.now(),c:"Перерыв",ph:"",sid:0,d:dd,t:tt,e:ee,p:0,st:"new",br:1,note:nt}:{id:Date.now(),c:c,ph:cleanPh(document.getElementById("cp").value),sid:sid,d:dd,t:tt,p:x.p,st:"new",note:nt});
   save();S.d=dd;S.mo=dd.slice(0,8)+"01";S.tab="day";close();render();toast(br?"Перерыв добавлен":"Запись добавлена")}
  else if(d.close&&e.target===t){close()}
 });
+function fmtPh(v){var d=v.replace(/\D/g,"");if(d[0]==="7"||d[0]==="8")d=d.slice(1);d=d.slice(0,10);
+ var r="+7";if(d.length)r+=" "+d.slice(0,3);if(d.length>3)r+=" "+d.slice(3,6);if(d.length>6)r+="-"+d.slice(6,8);if(d.length>8)r+="-"+d.slice(8,10);return r}
+function cleanPh(v){return v.replace(/\D/g,"").length>1?v.trim():""}
+document.addEventListener("focusin",function(e){var el=e.target;if(el.id==="cp"&&!el.value){el.value="+7 ";setTimeout(function(){try{el.setSelectionRange(3,3)}catch(x){}},0)}});
+document.addEventListener("input",function(e){var el=e.target;if(el.id==="cp")el.value=fmtPh(el.value)});
+document.addEventListener("focusout",function(e){var el=e.target;if(el.id==="cp"&&el.value.replace(/\D/g,"").length<2)el.value=""});
 render();
 </script></body></html>
