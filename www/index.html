@@ -63,6 +63,11 @@ label{display:block;font-weight:600;margin:12px 0 5px;font-size:13px}
 <nav class="tabs"><button data-t="day">Записи</button><button data-t="cl">Клиенты</button><button data-t="sv">Услуги</button><button data-t="inc">Доход</button></nav>
 <div class="toast" id="toast"></div><div id="modal"></div>
 <script>
+function showErr(m){var d=document.createElement("pre");d.style.cssText="white-space:pre-wrap;word-break:break-all;margin:0 0 10px;padding:10px;background:#fde8e8;color:#900;font:12px/1.4 monospace;border-radius:10px";d.textContent="Ошибка: "+m;document.body.insertBefore(d,document.body.firstChild)}
+window.addEventListener("error",function(e){showErr((e.message||"")+" (строка "+(e.lineno||"?")+")")});
+window.addEventListener("unhandledrejection",function(e){showErr(String(e.reason&&e.reason.message||e.reason))});
+</script>
+<script>
 function iso(d){return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
 function addD(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
 var TODAY=iso(new Date()),WD=["вс","пн","вт","ср","чт","пт","сб"],MON=["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"];
@@ -170,13 +175,4 @@ function render(){
  document.querySelectorAll(".tabs button").forEach(function(b){b.className=b.dataset.t===S.tab?"on":""});
  document.getElementById("fab").style.display=S.tab==="day"?"":"none";
  var h="",H="Записи";
- if(S.tab==="day"){
-  H="Календарь";h+=viewTabs();
-  if(S.v==="list")h+=listHTML();
-  else if(S.v==="month")h+=calHTML()+dayList(S.d);
-  else h+=navHTML()+gridHTML();
- }else if(S.tab==="cl"){
-  H="Клиенты";
-  h+='<input id="q" placeholder="Поиск по имени или телефону" value="'+esc(S.q)+'" style="margin-bottom:10px">';
-  var C={};S.ap.forEach(function(a){if(a.br)return;var c=C[a.ph||a.c]||(C[a.ph||a.c]={k:a.ph||a.c,n:a.c,ph:a.ph,v:0,sum:0,last:""});if(a.st==="done"){c.v++;c.sum+=a.p}if(a.st!=="cancel"&&a.d>c.last)c.last=a.d});
-  var q=S
+ if
