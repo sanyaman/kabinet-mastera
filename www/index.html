@@ -159,6 +159,13 @@ function importData(){var v=document.getElementById("rt").value,a=v.indexOf("{")
  try{var o=JSON.parse(v.slice(a,b+1));if(!Array.isArray(o.sv)||!Array.isArray(o.ap))throw 0;
   if(!confirm("Заменить текущие данные ("+S.ap.length+" записей) данными из копии ("+o.ap.length+" записей)?"))return;
   S.sv=o.sv;S.ap=o.ap;save();render();toast("Данные восстановлены")}catch(e){toast("Копия повреждена или вставлена не полностью")}}
+function exitSheet(){document.getElementById("modal").innerHTML='<div class="sheet" data-close="1"><div><h2>Выйти из приложения?</h2><div style="height:12px"></div><div class="g2"><button class="btn ghost big" data-stay="1">Остаться</button><button class="btn big" data-quit="1">Выйти</button></div></div></div>'}
+function appPlugin(){return window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()&&Capacitor.Plugins&&Capacitor.Plugins.App}
+function initBack(){var A=appPlugin();if(!A)return;
+ A.addListener("backButton",function(){var m=document.getElementById("modal");
+  if(m.innerHTML){m.innerHTML="";return}
+  if(S.tab!=="day"){S.tab="day";render();return}
+  exitSheet()})}
 function render(){
  document.querySelectorAll(".tabs button").forEach(function(b){b.className=b.dataset.t===S.tab?"on":""});
  document.getElementById("fab").style.display=S.tab==="day"?"":"none";
@@ -172,92 +179,4 @@ function render(){
   H="Клиенты";
   h+='<input id="q" placeholder="Поиск по имени или телефону" value="'+esc(S.q)+'" style="margin-bottom:10px">';
   var C={};S.ap.forEach(function(a){if(a.br)return;var c=C[a.ph||a.c]||(C[a.ph||a.c]={k:a.ph||a.c,n:a.c,ph:a.ph,v:0,sum:0,last:""});if(a.st==="done"){c.v++;c.sum+=a.p}if(a.st!=="cancel"&&a.d>c.last)c.last=a.d});
-  var q=S.q.toLowerCase(),arr=Object.keys(C).map(function(k){return C[k]}).filter(function(c){return !q||(c.n+c.ph).toLowerCase().indexOf(q)>-1}).sort(function(a,b){return b.sum-a.sum});
-  if(!arr.length)h+='<div class="empty">Клиентов пока нет. Они появятся из записей.</div>';
-  arr.forEach(function(c){h+='<button class="card cb" data-cl="'+esc(c.k)+'"><div class="row"><b>'+esc(c.n)+'</b><span>'+rub(c.sum)+'</span></div><div class="mut">'+esc(c.ph||"без телефона")+' · визитов: '+c.v+(c.last?' · последняя запись '+fmt(c.last):'')+'</div></button>'});
- }else if(S.tab==="sv"){
-  H="Услуги";
-  S.sv.forEach(function(x){h+='<div class="card"><div class="row"><b>'+esc(x.n)+'</b><button class="btn ghost" data-delsv="'+x.id+'">Удалить</button></div><div class="mut">'+rub(x.p)+' · '+x.m+' мин</div></div>'});
-  h+='<div class="card"><b>Новая услуга</b><label>Название</label><input id="sn"><div class="g2"><div><label>Цена, ₽</label><input id="sp" type="number" inputmode="numeric"></div><div><label>Длительность, мин</label><input id="sm" type="number" inputmode="numeric" value="60"></div></div><div style="height:12px"></div><button class="btn big" id="addsv">Добавить услугу</button></div>';h+=backupCard();h+=backupCard();
- }else{
-  H="Доход";
-  var ym=TODAY.slice(0,7),dn=S.ap.filter(function(a){return a.st==="done"&&a.d.slice(0,7)===ym}),tot=dn.reduce(function(s,a){return s+a.p},0);
-  var fut=S.ap.filter(function(a){return a.st==="new"&&a.d>=TODAY}).reduce(function(s,a){return s+a.p},0);
-  h+='<div class="g2"><div class="stat"><span class="mut">За месяц</span><b>'+rub(tot)+'</b></div><div class="stat"><span class="mut">Средний чек</span><b>'+(dn.length?rub(tot/dn.length):"—")+'</b></div><div class="stat"><span class="mut">Визитов</span><b>'+dn.length+'</b></div><div class="stat"><span class="mut">Ожидается</span><b>'+rub(fut)+'</b></div></div>';
-  var w=[];for(var k=6;k>=0;k--){var id=iso(addD(new Date(),-k));w.push([WD[new Date(id+"T00:00").getDay()],S.ap.filter(function(a){return a.d===id&&a.st==="done"}).reduce(function(s,a){return s+a.p},0)])}
-  var mx=Math.max.apply(null,w.map(function(x){return x[1]}).concat([1]));
-  h+='<p class="sum" style="margin-top:16px">Последние 7 дней</p><div class="bars">'+w.map(function(x){return '<div style="height:'+(x[1]/mx*100)+'%"></div>'}).join("")+'</div><div class="bl">'+w.map(function(x){return '<span>'+x[0]+'</span>'}).join("")+'</div>';
-  h+='<p class="sum" style="margin-top:16px">По услугам за месяц</p>';
-  S.sv.forEach(function(x){var s=dn.filter(function(a){return a.sid===x.id}).reduce(function(t,a){return t+a.p},0);if(s)h+='<div class="card"><div class="row"><span>'+esc(x.n)+'</span><b>'+rub(s)+'</b></div><div class="bar2" style="width:'+(s/tot*100)+'%"></div></div>'});
-  if(!tot)h+='<div class="empty">Доход появится, когда вы отметите визиты как выполненные.</div>';
- }
- document.getElementById("h").textContent=H;document.getElementById("app").innerHTML=h;
- var qi=document.getElementById("q");
- if(qi)qi.oninput=function(){S.q=qi.value;var p=qi.selectionStart;render();var n=document.getElementById("q");n.focus();n.setSelectionRange(p,p)};
-}
-function close(){document.getElementById("modal").innerHTML=""}
-function addSheet(dd,tt){dd=dd||S.d;tt=tt||"12:00";
- var h='<div class="sheet" data-close="1"><div><h2>Новая запись</h2><label>Тип</label><select id="ctp"><option value="a">Запись клиента</option><option value="b">Перерыв / занято</option></select><label>Клиент</label><input id="cn" placeholder="Имя"><label>Телефон</label><input id="cp" type="tel" inputmode="tel" placeholder="+7 900 000-00-00">'+
- '<label>Услуга</label><select id="cs">'+S.sv.map(function(x){return '<option value="'+x.id+'">'+esc(x.n)+' — '+rub(x.p)+'</option>'}).join("")+'</select>'+
- '<div class="g2"><div><label>Дата</label><input id="cd" type="date" value="'+dd+'"></div><div><label>Время</label><input id="ct" type="time" value="'+tt+'" step="900"></div></div>'+
- '<label>Конец (только для перерыва)</label><input id="ce" type="time" value="'+hm(Math.min(mins(tt)+60,1439))+'" step="900"><label>Заметка</label><input id="cm" placeholder="Например: снять старое покрытие"><div style="height:16px"></div><button class="btn big" id="saveap">Сохранить запись</button></div></div>';
- document.getElementById("modal").innerHTML=h;
-}
-function openSheet(id){
- var a=S.ap.filter(function(x){return x.id===id})[0],s=sv(a.sid);
- var h='<div class="sheet" data-close="1"><div><h2>'+esc(a.c)+'</h2><p class="mut">'+(a.br?"":esc(a.ph||"без телефона")+"<br>")+fmt(a.d)+', '+a.t+'–'+hm(mins(a.t)+dur(a))+(a.br?'':' · '+esc(s.n)+' · '+rub(a.p))+(a.note?'<br>'+esc(a.note):'')+'</p>'+
- (a.st==="new"&&!a.br?'<button class="btn big" data-done="'+id+'">Клиент пришёл — оплачено</button><div style="height:8px"></div>':'')+
- (a.br?'':'<button class="btn ghost big" data-rem="'+id+'">Скопировать напоминание клиенту</button><div style="height:8px"></div>')+
- (a.st==="new"?'<button class="btn bad big" data-cx="'+id+'">Отменить запись</button><div style="height:8px"></div>':'')+
- '<button class="btn bad big" data-del="'+id+'">Удалить</button></div></div>';
- document.getElementById("modal").innerHTML=h;
-}
-function copy(t){try{navigator.clipboard.writeText(t).then(function(){toast("Скопировано")},function(){prompt("Скопируйте текст",t)})}catch(e){prompt("Скопируйте текст",t)}}
-document.addEventListener("click",function(e){
-
- var gc=e.target.closest&&e.target.closest(".gc");
- if(gc&&!e.target.closest("button")){var y=e.clientY-gc.getBoundingClientRect().top;addSheet(gc.dataset.col,hm(Math.min(+gc.dataset.lo+Math.floor(y/(PH/2))*30,1410)));return}
- var t=e.target.closest("button,.sheet"),d=t?t.dataset:{};if(!t)return;
- if(d.mv){var n=+d.mv;if(S.v==="month"){var m=new Date(S.mo+"T00:00");S.mo=iso(new Date(m.getFullYear(),m.getMonth()+n,1))}else{S.d=iso(addD(new Date(S.d+"T00:00"),n*(S.v==="week"?7:1)));S.mo=S.d.slice(0,8)+"01"}render()}
- else if(d.today){S.d=TODAY;S.mo=TODAY.slice(0,8)+"01";render()}
- else if(d.view){S.v=d.view;S.mo=S.d.slice(0,8)+"01";render()}
- else if(d.cl){clientSheet(d.cl)}
- else if(d.recl){var q=S.ap.filter(function(a){return !a.br&&(a.ph||a.c)===d.recl})[0];addSheet();document.getElementById("cn").value=q.c;document.getElementById("cp").value=q.ph||""}
- else if(d.bk){bkSheet()}
- else if(d.rs){rsSheet()}
- else if(t.id==="bkcopy"){bkCopy()}
- else if(t.id==="rsgo"){rsGo()}
- else if(d.exp){exportData()}
- else if(d.imp){importData()}
- else if(d.dh){S.d=d.dh;S.v="day";render()}
- else if(d.t){S.tab=d.t;render()}
- else if(d.day){S.d=d.day;S.mo=d.day.slice(0,8)+"01";render()}
- else if(d.add){addSheet()}
- else if(d.open){openSheet(+d.open)}
- else if(d.done){S.ap.forEach(function(a){if(a.id===+d.done)a.st="done"});save();close();render();toast("Визит записан в доход")}
- else if(d.cx){S.ap.forEach(function(a){if(a.id===+d.cx)a.st="cancel"});save();close();render();toast("Запись отменена")}
- else if(d.del){S.ap=S.ap.filter(function(a){return a.id!==+d.del});save();close();render()}
- else if(d.rem){var a=S.ap.filter(function(x){return x.id===+d.rem})[0];copy("Здравствуйте, "+a.c+"! Напоминаю о записи: "+fmt(a.d)+" в "+a.t+" ("+sv(a.sid).n+"). Если планы изменятся, напишите заранее.")}
- else if(d.delsv){S.sv=S.sv.filter(function(x){return x.id!==+d.delsv});save();render()}
- else if(t.id==="addsv"){var n=document.getElementById("sn").value.trim(),p=+document.getElementById("sp").value,m=+document.getElementById("sm").value;
-  if(!n||!p||!m){toast("Заполните название, цену и время");return}
-  S.sv.push({id:Date.now(),n:n,p:p,m:m});save();render();toast("Услуга добавлена")}
- else if(t.id==="saveap"){
-  var br=document.getElementById("ctp").value==="b",c=document.getElementById("cn").value.trim(),sid=+document.getElementById("cs").value,dd=document.getElementById("cd").value,tt=document.getElementById("ct").value,ee=document.getElementById("ce").value,nt=document.getElementById("cm").value.trim();
-  if(!dd||!tt||(!br&&!c)){toast(br?"Укажите дату и время":"Укажите клиента, дату и время");return}
-  if(br&&(!ee||mins(ee)<=mins(tt))){toast("Укажите время окончания перерыва");return}
-  var x=sv(sid),st=mins(tt),en=br?mins(ee):st+x.m;
-  var clash=S.ap.filter(function(a){return a.d===dd&&a.st!=="cancel"&&mins(a.t)<en&&mins(a.t)+dur(a)>st})[0];
-  if(clash&&!confirm("Время пересекается: "+clash.c+" в "+clash.t+". Всё равно сохранить?"))return;
-  S.ap.push(br?{id:Date.now(),c:"Перерыв",ph:"",sid:0,d:dd,t:tt,e:ee,p:0,st:"new",br:1,note:nt}:{id:Date.now(),c:c,ph:cleanPh(document.getElementById("cp").value),sid:sid,d:dd,t:tt,p:x.p,st:"new",note:nt});
-  save();S.d=dd;S.mo=dd.slice(0,8)+"01";S.tab="day";close();render();toast(br?"Перерыв добавлен":"Запись добавлена")}
- else if(d.close&&e.target===t){close()}
-});
-function fmtPh(v){var d=v.replace(/\D/g,"");if(d[0]==="7"||d[0]==="8")d=d.slice(1);d=d.slice(0,10);
- var r="+7";if(d.length)r+=" "+d.slice(0,3);if(d.length>3)r+=" "+d.slice(3,6);if(d.length>6)r+="-"+d.slice(6,8);if(d.length>8)r+="-"+d.slice(8,10);return r}
-function cleanPh(v){return v.replace(/\D/g,"").length>1?v.trim():""}
-document.addEventListener("focusin",function(e){var el=e.target;if(el.id==="cp"&&!el.value){el.value="+7 ";setTimeout(function(){try{el.setSelectionRange(3,3)}catch(x){}},0)}});
-document.addEventListener("input",function(e){var el=e.target;if(el.id==="cp")el.value=fmtPh(el.value)});
-document.addEventListener("focusout",function(e){var el=e.target;if(el.id==="cp"&&el.value.replace(/\D/g,"").length<2)el.value=""});
-render();
-</script></body></html>
+  var q=S
