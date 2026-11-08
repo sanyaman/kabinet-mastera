@@ -15,6 +15,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+      - name: Use fixed signing key
+        env:
+          KS: ${{ secrets.DEBUG_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KS" ]; then mkdir -p ~/.android && echo "$KS" | base64 -d > ~/.android/debug.keystore; fi
       - run: npm install
       - run: npx cap add android
       - run: npx cap sync android
