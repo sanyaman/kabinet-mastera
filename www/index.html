@@ -74,12 +74,12 @@ function addD(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
 var TODAY=iso(new Date()),WD=["вс","пн","вт","ср","чт","пт","сб"],MON=["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"];
 var S={tab:"day",d:TODAY,sv:[],ap:[],q:""};
 try{var s=JSON.parse(localStorage.getItem("master")||"null");if(s){S.sv=s.sv;S.ap=s.ap}}catch(e){}
-if(!S.sv.length){
- S.sv=[{id:1,n:"Маникюр с покрытием",p:2200,m:120},{id:2,n:"Маникюр классический",p:1400,m:60},{id:3,n:"Наращивание гелем",p:3200,m:150},{id:4,n:"Педикюр",p:2500,m:90}];
- var demo=[["Анна К.","+79001112233",1,-2,"10:00"],["Мария С.","+79004445566",3,-1,"12:00"],["Ольга В.","+79007778899",2,0,"10:00"],["Ирина П.","+79001230000",1,0,"13:00"],["Анна К.","+79001112233",4,1,"11:00"],["Дарья Л.","+79005550011",1,2,"15:00"]];
- demo.forEach(function(x,i){var sv=S.sv[x[2]-1];S.ap.push({id:i+1,c:x[0],ph:x[1],sid:x[2],d:iso(addD(new Date(),x[3])),t:x[4],p:sv.p,st:x[3]<0?"done":"new",note:""})});
-}
-function save(){try{localStorage.setItem("master",JSON.stringify({sv:S.sv,ap:S.ap}))}catch(e){}}
+var DN=["Анна К.","Мария С.","Ольга В.","Ирина П.","Дарья Л."],DP=["+79001112233","+79004445566","+79007778899","+79001230000","+79005550011"],DS=["Маникюр с покрытием","Маникюр классический","Наращивание гелем","Педикюр"];
+(function(){try{var s0=JSON.parse(localStorage.getItem("master")||"null");if(s0&&!s0.dc){
+ S.ap=S.ap.filter(function(a){return !(a.id>=1&&a.id<=6&&DN.indexOf(a.c)>-1&&DP.indexOf(a.ph)>-1)});
+ S.sv=S.sv.filter(function(x){return !(x.id>=1&&x.id<=4&&DS.indexOf(x.n)>-1&&!S.ap.some(function(a){return a.sid===x.id}))});
+ localStorage.setItem("master",JSON.stringify({sv:S.sv,ap:S.ap,dc:1}))}}catch(e){}})();
+function save(){try{localStorage.setItem("master",JSON.stringify({sv:S.sv,ap:S.ap,dc:1}))}catch(e){}}
 function toast(t){var e=document.getElementById("toast");e.textContent=t;e.className="toast show";setTimeout(function(){e.className="toast"},1800)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function sv(id){return S.sv.filter(function(x){return x.id===id})[0]||{n:"Услуга удалена",m:60,p:0}}
@@ -181,7 +181,7 @@ function render(){
   if(!arr.length)h+='<div class="empty">Клиентов пока нет. Они появятся из записей.</div>';
   arr.forEach(function(c){h+='<button class="card cb" data-cl="'+esc(c.k)+'"><div class="row"><b>'+esc(c.n)+'</b><span>'+rub(c.sum)+'</span></div><div class="mut">'+esc(c.ph||"без телефона")+' · визитов: '+c.v+(c.last?' · последняя запись '+fmt(c.last):'')+'</div></button>'});
  }else if(S.tab==="sv"){
-  H="Услуги";
+  H="Услуги";if(!S.sv.length)h+='<p class="mut">Добавьте свои услуги: название, цену и длительность. Они появятся при создании записи.</p>';
   S.sv.forEach(function(x){h+='<div class="card"><div class="row"><b>'+esc(x.n)+'</b><button class="btn ghost" data-delsv="'+x.id+'">Удалить</button></div><div class="mut">'+rub(x.p)+' · '+x.m+' мин</div></div>'});
   h+='<div class="card"><b>Новая услуга</b><label>Название</label><input id="sn"><div class="g2"><div><label>Цена, ₽</label><input id="sp" type="number" inputmode="numeric"></div><div><label>Длительность, мин</label><input id="sm" type="number" inputmode="numeric" value="60"></div></div><div style="height:12px"></div><button class="btn big" id="addsv">Добавить услугу</button></div>';h+=backupCard();
  }else{
@@ -203,7 +203,7 @@ function render(){
 function close(){document.getElementById("modal").innerHTML=""}
 function addSheet(dd,tt){dd=dd||S.d;tt=tt||"12:00";
  var h='<div class="sheet" data-close="1"><div><h2>Новая запись</h2><label>Тип</label><select id="ctp"><option value="a">Запись клиента</option><option value="b">Перерыв / занято</option></select><label>Клиент</label><input id="cn" placeholder="Имя"><label>Телефон</label><input id="cp" type="tel" inputmode="tel" placeholder="+7 900 000-00-00">'+
- '<label>Услуга</label><select id="cs">'+S.sv.map(function(x){return '<option value="'+x.id+'">'+esc(x.n)+' — '+rub(x.p)+'</option>'}).join("")+'</select>'+
+ '<label>Услуга</label><select id="cs">'+(S.sv.length?S.sv.map(function(x){return '<option value="'+x.id+'">'+esc(x.n)+' — '+rub(x.p)+'</option>'}).join(""):'<option value="0">Нет услуг — добавьте в разделе «Услуги»</option>')+'</select>'+
  '<div class="g2"><div><label>Дата</label><input id="cd" type="date" value="'+dd+'"></div><div><label>Время</label><input id="ct" type="time" value="'+tt+'" step="900"></div></div>'+
  '<label>Конец (только для перерыва)</label><input id="ce" type="time" value="'+hm(Math.min(mins(tt)+60,1439))+'" step="900"><label>Заметка</label><input id="cm" placeholder="Например: снять старое покрытие"><div style="height:16px"></div><button class="btn big" id="saveap">Сохранить запись</button></div></div>';
  document.getElementById("modal").innerHTML=h;
@@ -248,6 +248,7 @@ document.addEventListener("click",function(e){
  else if(t.id==="saveap"){
   var br=document.getElementById("ctp").value==="b",c=document.getElementById("cn").value.trim(),sid=+document.getElementById("cs").value,dd=document.getElementById("cd").value,tt=document.getElementById("ct").value,ee=document.getElementById("ce").value,nt=document.getElementById("cm").value.trim();
   if(!dd||!tt||(!br&&!c)){toast(br?"Укажите дату и время":"Укажите клиента, дату и время");return}
+  if(!br&&!S.sv.length){toast("Сначала добавьте услугу в разделе «Услуги»");return}
   if(br&&(!ee||mins(ee)<=mins(tt))){toast("Укажите время окончания перерыва");return}
   var x=sv(sid),st=mins(tt),en=br?mins(ee):st+x.m;
   var clash=S.ap.filter(function(a){return a.d===dd&&a.st!=="cancel"&&mins(a.t)<en&&mins(a.t)+dur(a)>st})[0];
