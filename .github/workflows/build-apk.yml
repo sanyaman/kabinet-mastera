@@ -19,12 +19,18 @@ jobs:
         env:
           KS: ${{ secrets.DEBUG_KEYSTORE_B64 }}
         run: |
-          if [ -n "$KS" ]; then mkdir -p ~/.android && echo "$KS" | base64 -d > ~/.android/debug.keystore; fi
+          if [ -z "$KS" ]; then echo "::error::Secret DEBUG_KEYSTORE_B64 is missing"; exit 1; fi
+          mkdir -p ~/.android
+          echo "$KS" | base64 -d > ~/.android/debug.keystore
+          keytool -list -v -keystore ~/.android/debug.keystore -storepass android | grep SHA256
       - run: npm install
       - run: npx cap add android
       - run: npx cap sync android
       - run: chmod +x android/gradlew && cd android && ./gradlew assembleDebug
+      - name: Show APK signature
+        run: keytool -printcert -jarfile android/app/build/outputs/apk/debug/app-debug.apk | grep SHA256
       - uses: actions/upload-artifact@v4
         with:
           name: kabinet-mastera-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          
