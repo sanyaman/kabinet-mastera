@@ -2,23 +2,22 @@
 <html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Кабинет мастера</title>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#faf5f7;--card:#fff;--ink:#2a1626;--mut:#7d6677;--line:#eadde4;--acc:#9b2d6f;--onacc:#fff;--ok:#1f7a5c;--bad:#b3362f;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a0f18;--card:#26172e;--ink:#f6eaf2;--mut:#b99fb0;--line:#3a2736;--acc:#e07bb8;--onacc:#2a0f20;--ok:#5fd0a5;--bad:#ff8a80}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Manrope,system-ui,sans-serif;max-width:560px;margin-inline:auto;padding:16px 16px 96px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Roboto,sans-serif;max-width:560px;margin-inline:auto;padding:16px 16px 96px}
 h1{font-size:24px;font-weight:800;margin:4px 0 10px;letter-spacing:-.02em}
-input,select,textarea{width:100%;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px;font:15px Manrope,sans-serif}
+input,select,textarea{width:100%;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px;font:15px system-ui,-apple-system,Roboto,sans-serif}
 label{display:block;font-weight:600;margin:12px 0 5px;font-size:13px}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .days{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px}
-.day{flex:none;width:52px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:8px 0;font:600 12px Manrope,sans-serif;text-align:center}
+.day{flex:none;width:52px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:8px 0;font:600 12px system-ui,-apple-system,Roboto,sans-serif;text-align:center}
 .day b{display:block;font-size:17px}.day.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
 .day i{display:block;width:5px;height:5px;border-radius:50%;background:var(--acc);margin:3px auto 0}.day.on i{background:var(--onacc)}.day:not(.has) i{visibility:hidden}
-.vt{display:flex;border:1px solid var(--acc);border-radius:12px;overflow:hidden;margin-bottom:10px}.vt button{flex:1;border:0;background:none;color:var(--acc);font:700 12px Manrope,sans-serif;padding:10px 2px}.vt button.on{background:var(--acc);color:var(--onacc)}
-.gh{display:flex;padding-left:34px;gap:1px}.gd{flex:1;border:0;background:none;color:var(--mut);font:600 12px Manrope,sans-serif;padding:4px 0;text-align:center}.gd b{display:block;font-size:14px;color:var(--ink)}.gd.td b{color:var(--acc)}
+.vt{display:flex;border:1px solid var(--acc);border-radius:12px;overflow:hidden;margin-bottom:10px}.vt button{flex:1;border:0;background:none;color:var(--acc);font:700 12px system-ui,-apple-system,Roboto,sans-serif;padding:10px 2px}.vt button.on{background:var(--acc);color:var(--onacc)}
+.gh{display:flex;padding-left:34px;gap:1px}.gd{flex:1;border:0;background:none;color:var(--mut);font:600 12px system-ui,-apple-system,Roboto,sans-serif;padding:4px 0;text-align:center}.gd b{display:block;font-size:14px;color:var(--ink)}.gd.td b{color:var(--acc)}
 .gt span.h{color:var(--ink);font-weight:700;font-size:12px}.gb{margin-top:8px;display:flex;position:relative;border-top:1px solid var(--line)}.gt{width:34px;flex:none;position:relative}.gt span{position:absolute;right:4px;font-size:11px;color:var(--mut);transform:translateY(-50%)}
 .gc{flex:1;position:relative;border-left:1px solid var(--line);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(rgba(128,128,128,.16) 1px,transparent 1px);background-size:100% 72px,100% 72px;background-position:0 0,0 36px;min-width:0}
 .gk{position:absolute;left:1px;right:1px;border:0;border-radius:6px;padding:3px;overflow:hidden;text-align:left;font:inherit;color:#1c1030;background:#cdb8ff;line-height:1.15}.gk b{display:block;font-size:11px;overflow:hidden;text-overflow:ellipsis}.gk small{display:block;font-size:9px;opacity:.7;word-break:break-word}
@@ -26,7 +25,7 @@ label{display:block;font-weight:600;margin:12px 0 5px;font-size:13px}
 .card.cb{display:block;width:100%;text-align:left;color:var(--ink);font:inherit}.ap.cancel .mut{text-decoration:none}
 .calh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.calh b{font-size:16px}.calh .btn{padding:8px 16px;font-size:18px}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px}.cal .wd{text-align:center;font-size:12px;color:var(--mut);padding:4px 0}
-.cd{position:relative;border:1px solid transparent;background:var(--card);color:var(--ink);border-radius:12px;height:44px;font:600 15px Manrope,sans-serif;padding:0}
+.cd{position:relative;border:1px solid transparent;background:var(--card);color:var(--ink);border-radius:12px;height:44px;font:600 15px system-ui,-apple-system,Roboto,sans-serif;padding:0}
 .cd.ot{opacity:.4}.cd.td{border-color:var(--acc)}.cd.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
 .cd i{position:absolute;left:50%;bottom:5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--acc);visibility:hidden}.cd.on i{background:var(--onacc)}.cd.has i{visibility:visible}
 .calb{display:flex;gap:8px;margin-bottom:10px}.calb .btn{flex:1;padding:9px}
@@ -34,12 +33,12 @@ label{display:block;font-weight:600;margin:12px 0 5px;font-size:13px}
 .ap{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:8px;width:100%;text-align:left;color:var(--ink);font:inherit}
 .ap .t{flex:none;width:54px;font-weight:800}.ap .t small{display:block;color:var(--mut);font-weight:400;font-size:12px}
 .ap.done{border-left:4px solid var(--ok)}.ap.cancel{opacity:.5;text-decoration:line-through}.ap.new{border-left:4px solid var(--acc)}
-.btn{border:0;background:var(--acc);color:var(--onacc);font:700 14px Manrope,sans-serif;padding:10px 16px;border-radius:12px}
+.btn{border:0;background:var(--acc);color:var(--onacc);font:700 14px system-ui,-apple-system,Roboto,sans-serif;padding:10px 16px;border-radius:12px}
 .btn.ghost{background:none;color:var(--ink);border:1px solid var(--line)}.btn.bad{background:none;color:var(--bad);border:1px solid var(--line)}
 .btn.big{width:100%;padding:14px;font-size:16px}
 .fab{position:fixed;right:16px;bottom:calc(76px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;font-size:28px;padding:0;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:3}
 .tabs{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:4px;background:var(--card);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));z-index:3}
-.tabs button{flex:1;max-width:140px;border:0;background:none;color:var(--mut);font:600 13px Manrope,sans-serif;padding:10px 4px;border-radius:12px}
+.tabs button{flex:1;max-width:140px;border:0;background:none;color:var(--mut);font:600 13px system-ui,-apple-system,Roboto,sans-serif;padding:10px 4px;border-radius:12px}
 .tabs button.on{background:var(--acc);color:var(--onacc)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:8px}
 .mut{color:var(--mut);font-size:13px}
@@ -147,14 +146,6 @@ function clientSheet(k){
   h+='<button class="ap '+a.st+'" data-open="'+a.id+'"><div class="t" style="width:92px">'+fmt(a.d)+'<small>'+a.t+'</small></div><div style="flex:1">'+esc(sv(a.sid).n)+'<div class="mut">'+lb+'</div></div><b>'+rub(a.p)+'</b></button>'});
  document.getElementById("modal").innerHTML=h+'</div></div>';
 }
-function backupCard(){return '<div class="card"><b>Копия данных</b><p class="mut">Записи хранятся только в этом приложении. Сохраните копию перед обновлением или сменой телефона.</p><div class="g2"><button class="btn big" data-bk="1">Сохранить копию</button><button class="btn ghost big" data-rs="1">Загрузить копию</button></div></div>'}
-function bkSheet(){document.getElementById("modal").innerHTML='<div class="sheet" data-close="1"><div><h2>Копия данных</h2><p class="mut">Нажмите «Скопировать» и вставьте текст в заметки или в Telegram («Избранное»). Чтобы восстановить, вставьте его обратно через «Загрузить копию».</p><textarea id="bkt" readonly rows="6" style="font:12px monospace"></textarea><div style="height:12px"></div><button class="btn big" id="bkcopy">Скопировать</button></div></div>';document.getElementById("bkt").value="KABINET:"+JSON.stringify({v:1,sv:S.sv,ap:S.ap})}
-function bkCopy(){var t=document.getElementById("bkt");t.focus();t.select();var ok=function(){toast("Скопировано")};try{navigator.clipboard.writeText(t.value).then(ok,function(){try{document.execCommand("copy");ok()}catch(x){toast("Скопируйте текст вручную")}})}catch(x){try{document.execCommand("copy");ok()}catch(y){toast("Скопируйте текст вручную")}}}
-function rsSheet(){document.getElementById("modal").innerHTML='<div class="sheet" data-close="1"><div><h2>Загрузить копию</h2><p class="mut">Вставьте сюда текст, который вы сохраняли. Текущие записи будут заменены.</p><textarea id="rst" rows="6" placeholder="KABINET:{...}" style="font:12px monospace"></textarea><div style="height:12px"></div><button class="btn big" id="rsgo">Загрузить</button></div></div>'}
-function rsGo(){var v=document.getElementById("rst").value,i=v.indexOf("{"),j=v.lastIndexOf("}"),o;try{o=JSON.parse(v.slice(i,j+1))}catch(e){}
- if(!o||!Array.isArray(o.sv)||!Array.isArray(o.ap)){toast("Не похоже на копию данных");return}
- if(!confirm("Загрузить копию: записей "+o.ap.length+", услуг "+o.sv.length+"? Текущие данные будут заменены."))return;
- S.sv=o.sv;S.ap=o.ap;save();close();render();toast("Данные загружены")}
 function backupCard(){return '<div class="card"><b>Резервная копия</b><p class="mut">Перед обновлением приложения нажмите «Скопировать копию» и сохраните текст в Заметки или отправьте себе в Telegram. После установки новой версии вставьте его в поле ниже и нажмите «Восстановить».</p><button class="btn big" data-exp="1">Скопировать копию данных</button><label>Вставьте копию сюда</label><textarea id="rt" rows="3" placeholder="Текст копии" style="min-height:70px"></textarea><div style="height:10px"></div><button class="btn ghost big" data-imp="1">Восстановить из копии</button></div>'}
 function manualCopy(j){var ta=document.getElementById("rt");ta.value=j;ta.focus();ta.select();var ok=false;try{ok=document.execCommand("copy")}catch(e){}toast(ok?"Копия скопирована":"Выделите текст в поле и скопируйте вручную")}
 function exportData(){var j=JSON.stringify({app:"kabinet-mastera",v:1,sv:S.sv,ap:S.ap});
@@ -190,7 +181,7 @@ function render(){
  }else if(S.tab==="sv"){
   H="Услуги";
   S.sv.forEach(function(x){h+='<div class="card"><div class="row"><b>'+esc(x.n)+'</b><button class="btn ghost" data-delsv="'+x.id+'">Удалить</button></div><div class="mut">'+rub(x.p)+' · '+x.m+' мин</div></div>'});
-  h+='<div class="card"><b>Новая услуга</b><label>Название</label><input id="sn"><div class="g2"><div><label>Цена, ₽</label><input id="sp" type="number" inputmode="numeric"></div><div><label>Длительность, мин</label><input id="sm" type="number" inputmode="numeric" value="60"></div></div><div style="height:12px"></div><button class="btn big" id="addsv">Добавить услугу</button></div>';h+=backupCard();h+=backupCard();
+  h+='<div class="card"><b>Новая услуга</b><label>Название</label><input id="sn"><div class="g2"><div><label>Цена, ₽</label><input id="sp" type="number" inputmode="numeric"></div><div><label>Длительность, мин</label><input id="sm" type="number" inputmode="numeric" value="60"></div></div><div style="height:12px"></div><button class="btn big" id="addsv">Добавить услугу</button></div>';h+=backupCard();
  }else{
   H="Доход";
   var ym=TODAY.slice(0,7),dn=S.ap.filter(function(a){return a.st==="done"&&a.d.slice(0,7)===ym}),tot=dn.reduce(function(s,a){return s+a.p},0);
@@ -235,10 +226,6 @@ document.addEventListener("click",function(e){
  else if(d.view){S.v=d.view;S.mo=S.d.slice(0,8)+"01";render()}
  else if(d.cl){clientSheet(d.cl)}
  else if(d.recl){var q=S.ap.filter(function(a){return !a.br&&(a.ph||a.c)===d.recl})[0];addSheet();document.getElementById("cn").value=q.c;document.getElementById("cp").value=q.ph||""}
- else if(d.bk){bkSheet()}
- else if(d.rs){rsSheet()}
- else if(t.id==="bkcopy"){bkCopy()}
- else if(t.id==="rsgo"){rsGo()}
  else if(d.exp){exportData()}
  else if(d.imp){importData()}
  else if(d.stay){close()}
